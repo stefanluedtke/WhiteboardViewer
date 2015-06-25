@@ -14,21 +14,28 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	@Override
 	public void processPenEvent(PenSensor.Event event) {
 		if(event.getEventType()==Type.PENTAKEN){
-			//alles los
+			//wenn bereits min. ein stift genommen, ignoriere, sonst:
+			//beschriebenes whiteboard ermitteln
+			//anzeigeposition ermitteln
+			//kamera ausrichten
+			//dauerhaft whiteboard abfilmen und anzeigen
 		}else if(event.getEventType()==Type.PENINSERTED){
-			//weiter anzeigen wie bisher, aber keine aenderungen
+			//weiter anzeigen wie bisher, aber keine 
+			//aenderungen der whiteboard- oder anzeigeposition
 			//mehr machen
 		}	
 	}	
 	
+	@Override
 	public void processTableHMMEvent(HMMFilterEvent event) {
-		//??, jedes mal aktualisieren
+		//sitzpositionen aktualisieren (jedes mal?)
 	}
 	
+	@Override
 	public void processScreenHMMEvent(HMMFilterEvent event){
 		
 		//if(prob(aktuellerscreen)<0.5):
-		//vll screen aktualisieren, blabla
+			//anzeigeposition aktualisieren
 	}
 
 }

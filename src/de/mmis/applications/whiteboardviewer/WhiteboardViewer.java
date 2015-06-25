@@ -9,5 +9,8 @@ public interface WhiteboardViewer{
 	
 	public void processPenEvent(PenSensor.Event event);
 	
+	public void processTableHMMEvent(HMMFilterEvent event);
+	
+	public void processScreenHMMEvent(HMMFilterEvent event);
 
 }
