@@ -15,6 +15,6 @@ public interface WhiteboardViewer{
 	
 	public void processListenerHMMEvent(Map<State<List<Double>>,Double> stateProbability, String sender);
 	
-	public void processScreenHMMEvent(HMMFilterEvent event);
+	public void processScreenHMMEvent(Map<State<List<Double>>,Double> stateProbability);
 
 }
