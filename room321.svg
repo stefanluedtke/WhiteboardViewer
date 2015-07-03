@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+  "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+  
+<svg width="864" height="675" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+	<defs>
+		<rect id="Chair" rx="7" ry="7" width="047" height="047" fill="silver" stroke="black" stroke-width="2" />
+		<rect id="StudentTable" width="140" height="060" fill="silver" stroke="black" stroke-width="3" />
+		<rect id="TeacherTable" width="160" height="060" fill="silver" stroke="black" stroke-width="3" />
+		<g id="doorCircle">
+			<path d="M0,0 v-100 a100,100 0 0,0 -100,100 z" fill="none" stroke="silver" stroke-width="3"/>	
+		</g>
+		<g id="StudentTableWithChairs">
+			<use xlink:href="#StudentTable" />
+			<use xlink:href="#Chair" x="015" y="070" />
+			<use xlink:href="#Chair" x="078" y="070" />
+		</g>
+		<g id="TeacherTableWithChairs">
+			<use xlink:href="#TeacherTable" />
+		  <use xlink:href="#Chair" x="020" y="070" />
+			<use xlink:href="#Chair" x="093" y="070" />
+		</g>
+		<use id="StudentTableWithChairsW" xlink:href="#StudentTableWithChairs" transform="rotate(90) translate(0, -060)" />
+		<use id="StudentTableWithChairsN" xlink:href="#StudentTableWithChairs" transform="rotate(180) translate(-140, -060)" />
+		<use id="StudentTableWithChairsE" xlink:href="#StudentTableWithChairs" transform="rotate(-90) translate(-140, 0)" />
+		<use id="StudentTableWithChairsS" xlink:href="#StudentTableWithChairs" />
+		
+		<use id="TeacherTableWithChairsW" xlink:href="#TeacherTableWithChairs" transform="rotate(90) translate(0, -060)" />
+		<use id="TeacherTableWithChairsE" xlink:href="#TeacherTableWithChairs" transform="rotate(-90) translate(-160, 0)" />
+	</defs>
+	<!-- room background -->
+	<rect x="0" y="0" width="864" height="675" fill="lightgray"/>
+	
+	<!-- entry-->
+	<rect x ="230" y="570" width="242" height="102" fill="snow" stroke="silver" stroke-width="3"/>
+	<use xlink:href="#doorCircle" transform="translate(241,672) rotate(90)"/> 
+	<use xlink:href="#doorCircle" transform="translate(444,672)"/> 
+	
+	<!-- air condition--> 
+	<rect x= "520" y ="580" width="163" height = "93" fill="silver" stroke="darkgrey" stroke-width="3" />
+
+	<!-- electrical cabinet -->
+	<rect x="050" y="643" width="105" height="030" fill="snow" stroke="silver" stroke-width="3"/>
+
+	<!-- wardrobes -->
+	<rect x="683" y="580" width="42" height="80"  fill="silver" stroke="darkgrey" stroke-width="3" />
+
+	<!-- washbasin -->
+	<use xlink:href="#basin" stroke-width="6" stroke="silver"/>
+	<g id="basin" fill="snow">
+	<rect x="820" y="565" rx="15" ry="15" width="041" height="070" />
+	<rect x="840" y="565" width="021" height="070" />
+  </g>
+  
+
+	<!-- tables vertical -->
+	<use xlink:href="#StudentTableWithChairsE" x="650" y="158" />
+	<use xlink:href="#StudentTableWithChairsE" x="650" y="298" />
+	<use xlink:href="#TeacherTableWithChairsW" x="230" y="218" />
+	
+	<!-- tables horizontal -->
+	<use xlink:href="#StudentTableWithChairsS" x="230" y="378" />
+	<use xlink:href="#StudentTableWithChairsS" x="370" y="378" />
+	<use xlink:href="#StudentTableWithChairsS" x="510" y="378" />
+	<use xlink:href="#StudentTableWithChairsN" x="230" y="158" />
+	<use xlink:href="#StudentTableWithChairsN" x="370" y="158" />
+	<use xlink:href="#StudentTableWithChairsN" x="510" y="158" />
+
+  <!-- table for jaynes -->
+	<use xlink:href="#jaynestable" stroke-width="6" stroke="black"/>
+  <g id="jaynestable" fill="silver">
+    <rect x="30" y="500" width="40" height="80" />
+    <circle cx="70" cy="540" r="40" />
+  </g>
+  <use xlink:href="#Chair" x="30" y="440" />
+  <use xlink:href="#Chair" x="120" y="520" />
+  
+  <!-- rack -->
+	<rect x ="160" y="603" width="60" height="70" fill="silver" stroke="black" stroke-width="3" />
+
+	<!-- pillars-->
+	<rect x ="476" y="643" width="033" height="032" fill="snow" />
+ 	<rect x ="696" y="659" width="043" height="016" fill="snow" />
+
+	<!-- air outlets -->
+	<rect x ="0" y="059" width="023" height="599" fill="snow" />
+	<rect x ="841" y="056" width="023" height="400" fill="snow" />
+
+	<!-- windows-->
+	<g stroke="black" stroke-width="6">
+		<line x1="011" y1="3" x2="105" y2="3" />
+		<line x1="136" y1="3" x2="330" y2="3" />
+		<line x1="386" y1="3" x2="479" y2="3" />
+		<line x1="510" y1="3" x2="604" y2="3" />
+		<line x1="635" y1="3" x2="728" y2="3" />
+		<line x1="759" y1="3" x2="853" y2="3" />
+	</g> 
+ 
+ 
+	
+</svg>	

@@ -5,16 +5,23 @@ import java.util.Map;
 
 import de.mmis.core.base.event.Event;
 import de.mmis.core.base.event.Observable;
+import de.mmis.core.gbi.GoalBasedInteractor;
+import de.mmis.devices.camera.AXISHTTPv2;
 import de.mmis.devices.pensensor2.PenSensor;
 import de.mmis.utilities.hmm.discrete.HMMFilterEvent;
 import de.mmis.utilities.hmm.discrete.State;
 
 public interface WhiteboardViewer{
 	
-	public void processPenEvent(PenSensor.Event event);
-	
-	public void processListenerHMMEvent(Map<State<List<Double>>,Double> stateProbability, String sender);
-	
-	public void processScreenHMMEvent(Map<State<List<Double>>,Double> stateProbability);
+
+	void processHMMEvent(String ubiid, String stateName);
+
+	void setCamera(AXISHTTPv2 camera);
+
+	void penTaken(int penID);
+
+	void addGBI(String gbiID, GoalBasedInteractor gbi);
+
+	void setLecturerID(String id);
 
 }
