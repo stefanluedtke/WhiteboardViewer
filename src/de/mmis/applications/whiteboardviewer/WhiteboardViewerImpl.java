@@ -165,7 +165,6 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	
 	@Override
 	public void processHMMEvent(String ubiid, String stateName){
-		//TODO: update whiteboard position if necessary. (maybe timer)
 		if(ubiid.equals(lecturerID) && stateName.startsWith("W")){
 			System.out.println("New lecturer position: " + stateName);
 			//A pen is taken and the lecturer is still moving around
@@ -248,12 +247,6 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	public void setCamera(AXISHTTPv2 camera){
 		System.out.println("setCamera(camera)");
 		this.camera=camera;
-		try {
-			camera.moveToPreset("S1");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -287,14 +280,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	}
 	
 	
-	protected void startOutput() {
 
-	}
-	
-	
-	protected void stopOutput(){
-		//TODO
-	}
 	
 	private Integer getTableNumber(String tableid){
 		return Integer.parseInt(tableid.substring(1));
