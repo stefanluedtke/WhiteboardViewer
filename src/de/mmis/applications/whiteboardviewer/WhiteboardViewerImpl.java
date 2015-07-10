@@ -31,6 +31,9 @@ import de.mmis.utilities.hmm.discrete.State;
 
 public class WhiteboardViewerImpl extends AbstractObservable<Event> implements WhiteboardViewer {
 	
+	public static final long TIMEOUT = 20000;
+	
+	
 
 	boolean waitingForLecturerPosition = false;
 	/**
@@ -46,11 +49,17 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 * position of lecturer tag, W0 if not positioned,
 	 * W1-W4 for whiteboards 1-4
 	 */
+	Map<String,GoalBasedInteractor> projectors = new HashMap<>();
+	Map<String,GoalBasedInteractor> lamps = new HashMap<String,GoalBasedInteractor>();
+	Map<String,GoalBasedInteractor> screens = new HashMap<String,GoalBasedInteractor>();
+	GoalBasedInteractor extron;
+	
 	String lecturerPosition;
 	long whiteBoardTime;
+	int input=0;
 	String lecturerID;
 	AXISHTTPv2 camera;
-	Map<String,GoalBasedInteractor> gbis = new HashMap<String,GoalBasedInteractor>();
+	
 	
 	/**
 	 * Whiteboard that is currently shown (W1-W4) W0 for no whiteboard shown
@@ -72,9 +81,9 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		
 	static List<List<Integer>> badViewTable;
 	
-	public WhiteboardViewerImpl(){
+	public WhiteboardViewerImpl(int input){
 		sittingPositions = new HashMap<String,String>();
-		
+		this.input = input;
 
 		
 		//build badViewTable
@@ -118,9 +127,33 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	    if(!isActive){
 	    	System.out.println("penTaken()");
 	    	System.out.println("Turn light on, blinds should go down.");
-	   
+	    	
+	    	isActive=true;
 	    	waitingForLecturerPosition = true;
-	    	timer.schedule(new OutputTask(), 10000);
+	    	
+	    	Tree goalLightOn = new InnerNode(new LeafNode("DIM_VALUE"), new LeafNode("1.0"));
+	    	Tree goalScreenDown = new InnerNode(new LeafNode("POSITION"), new LeafNode("false"));
+	    	
+	    	//turn lights on
+	    	lamps.forEach((name,gbi) -> {
+	    		try {
+					gbi.addGoal(GoalType.ACHIEVE, goalLightOn, 1, 10000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	    	});
+	    	
+	    	//blinds go down!
+	    	screens.forEach((name,gbi) -> {
+	    		try {
+	    			if(name.startsWith("SB")){
+	    				gbi.addGoal(GoalType.ACHIEVE, goalScreenDown, 1, 10000);
+	    			}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	    	});	    	
+	    	timer.schedule(new OutputTask(), TIMEOUT);
 	    }
 	}
 	
@@ -133,7 +166,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	@Override
 	public void processHMMEvent(String ubiid, String stateName){
 		//TODO: update whiteboard position if necessary. (maybe timer)
-		if(ubiid==lecturerID){
+		if(ubiid.equals(lecturerID) && stateName.startsWith("W")){
 			System.out.println("New lecturer position: " + stateName);
 			//A pen is taken and the lecturer is still moving around
 			if(waitingForLecturerPosition){	
@@ -143,7 +176,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				timer.schedule(new OutputTask(), 10000);
 			}
 			lecturerPosition=stateName;			
-		}else{
+		}else if(stateName.startsWith("T")){
 			System.out.println("Listener sitting at table: " + stateName);
 			sittingPositions.put(ubiid, stateName);
 		}
@@ -189,6 +222,13 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		}		
  		System.out.println("BestScore: " + bestScore);
  		System.out.println("Done.");
+ 		//translate screen number to match the roomids
+ 		if(optimalScreen == 7){
+ 			return (optimalScreen+2);
+ 		}
+ 		else if(optimalScreen>= 2){
+ 			return ++optimalScreen;
+ 		};
 		return optimalScreen;
 	}
 	
@@ -217,6 +257,13 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	}
 	
 	/**
+	 * Set the component to show the rectified image
+	 */
+	public void setPresenter(){
+		//
+	}
+	
+	/**
 	 * Add gbi for extron, projectors, screens, lamps, ...
 	 * @param gbiID
 	 * @param gbi
@@ -225,39 +272,18 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	public void addGBI(String gbiID, GoalBasedInteractor gbi){
 		System.out.println("addGBI(gibID,gbi) "+ gbiID);
 		
-		Tree goalP = new InnerNode(new LeafNode("INPUT"), new LeafNode("vga",Encoding.Quoted));
-		Tree goalE = new InnerNode(new LeafNode("3"),new LeafNode("1"), new LeafNode("BOTH"));
-		
-		if(gbiID.startsWith("Projector1_GBI")){
-			try {
-				gbi.addGoal(GoalType.ACHIEVE, goalP , 1, 10000);
-			} catch (InconsistentGoalException e) {
-				e.printStackTrace();
-			};
+		if(gbiID.startsWith("Projector")){
+				projectors.put(gbiID, gbi);
 		}
-		else if(gbiID.startsWith("Extron_GBI")){
-			try {
-				gbi.addGoal(GoalType.ACHIEVE, goalE , 1, 10000);
-			} catch (InconsistentGoalException e) {
-				e.printStackTrace();
-			}
+		else if(gbiID.startsWith("S")){
+				screens.put(gbiID, gbi);
 		}
-		
-//		Tree goalLamp = new InnerNode(new LeafNode("DIM_VALUE"), new LeafNode("1.0"));
-//		Tree goalScreen = new InnerNode(new LeafNode("POSITION"), new LeafNode("false"));
-//		try {
-//			if(gbiID.startsWith("LAMP")){
-//				gbi.addGoal(GoalType.ACHIEVE, goalLamp , 1, 10000);
-//			}
-//			else{
-//				gbi.addGoal(GoalType.ACHIEVE, goalScreen , 1, 10000);
-//			}
-//			
-//		} catch (InconsistentGoalException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		//TODO ...
+		else if(gbiID.startsWith("Lamp")){
+			lamps.put(gbiID, gbi);
+		}
+		else if(gbiID.startsWith("Extron")){
+			extron = gbi;
+		}
 	}
 	
 	
@@ -274,14 +300,32 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		return Integer.parseInt(tableid.substring(1));
 	}
 	
+	/**
+	 * Translates a HMM-State to a camera known preset
+	 * @param HMM-State
+	 * @return cameraPreset
+	 */
+	private String translateStateToPreset(String state){
+		switch (state){
+		case "W1": return "S1";
+		case "W2": return "S3";
+		case "W3": return "S7";
+		case "W4": return "S9";
+		default: System.err.println("Unkown HMM-State: " + state);
+			return null;
+		}
+	}
+	
 	class OutputTask extends TimerTask {
 		@Override
 		public void run() {
 			
 			System.out.println("The lecturer intends to write @ whiteboard" + whiteboard);			
 			waitingForLecturerPosition = false;
+			Integer screen = -1;
+			//Determine optimal screen
 			try {
-				Integer screen = getDisplayPosition(whiteboard);
+				screen = getDisplayPosition(whiteboard);
 				if(screen == -1){
 					System.out.println("Couldn't determine optimal Screen.");
 					waitingForLecturerPosition = true;
@@ -291,17 +335,39 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("Move Cam to preset:" + whiteboard);
-//			try {
-//				camera.moveToPreset(whiteboard);
-//			} catch (IOException e) {
-//				System.err.println("Error adjusting camera");
-//				e.printStackTrace();
-//			}
 			
-		
+			//move camera to correct preset
+			System.out.println("Move Cam to preset:" + whiteboard);
+			try {
+				camera.moveToPreset(translateStateToPreset(whiteboard));
+			} catch (IOException e) {
+				System.err.println("Error adjusting camera");
+				e.printStackTrace();
+			}
+			
+			//control extron
+			System.out.println("Extron input:" + whiteboard);
+			Tree goalE = new InnerNode(new LeafNode(String.valueOf(input)),new LeafNode(String.valueOf(screen)), new LeafNode("BOTH"));
+			try {
+				extron.addGoal(GoalType.ACHIEVE, goalE, 1, 10000);
+			} catch (InconsistentGoalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//turn projector on
+			System.out.println("Turning Projector on.. ");
+			
+			Tree goalProjector = new InnerNode(new LeafNode("INPUT"), new LeafNode("vga",Encoding.Quoted));
+			
+			String projector = "Projector" + String.valueOf(screen) + "_GBI";
+			try {
+				projectors.get(projector).addGoal(GoalType.ACHIEVE, goalProjector , 1, 10000);
+			} catch (InconsistentGoalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
 
 
