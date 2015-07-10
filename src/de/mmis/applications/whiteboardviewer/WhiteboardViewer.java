@@ -18,7 +18,7 @@ public interface WhiteboardViewer{
 
 	void setCamera(AXISHTTPv2 camera);
 
-	void penTaken(int penID);
+	void penTaken();
 
 	void addGBI(String gbiID, GoalBasedInteractor gbi);
 
