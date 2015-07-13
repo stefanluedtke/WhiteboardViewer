@@ -3,7 +3,7 @@ package de.mmis.applications.whiteboardviewer;
 public class WhiteboardViewerTest {
 
 	public static void main(String[] args) throws InterruptedException {
-		WhiteboardViewer wv = new WhiteboardViewerImpl();
+		WhiteboardViewer wv = new WhiteboardViewerImpl(3);
 		
 		wv.setLecturerID("S");
 		

@@ -1,12 +1,14 @@
 package de.mmis.applications.presenter;
 
 import georegression.struct.point.Point2D_F64;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -14,7 +16,9 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
+
 import org.ejml.data.DenseMatrix64F;
+
 import boofcv.abst.geo.Estimate1ofEpipolar;
 import boofcv.alg.distort.DistortImageOps;
 import boofcv.alg.distort.PointToPixelTransform_F32;
@@ -30,9 +34,13 @@ import de.mmis.devices.camera.AXISHTTPv2;
 
 
 
-public class ImagePerspectiveTransformation{
+public class ImagePerspectiveTransformation extends Thread{
 	private JFrame presentationWindow;
 	private JLabel imageLabel;
+	
+	private boolean stopFlag=false;
+	private AXISHTTPv2 camera;
+	private String cameraPreset;
 	
 	public ImagePerspectiveTransformation(){
 		presentationWindow = new JFrame();
@@ -55,12 +63,33 @@ public class ImagePerspectiveTransformation{
 		presentationWindow.add(imageLabel);
 	}
 	
+
+	@Override
+	public void run(){
+		while(!stopFlag){
+			BufferedImage image = imageCalculation(camera, cameraPreset);
+			showImage(image);
+		}
+	}
+	
+	public void stopThread(){
+		stopFlag=true;
+	}
+	
+	public void startImageProcessing(AXISHTTPv2 camera,String cameraPreset){
+		System.out.println("Start image processing");
+		this.camera=camera;
+		this.cameraPreset=cameraPreset;
+		start();
+	}
+	
 	public BufferedImage imageCalculation(AXISHTTPv2 camera, String cameraPreset){
 
 		//Byte [] in BufferedImage
 		BufferedImage cameraImage = null;
-	    InputStream cameraImageByteArray = new ByteArrayInputStream(camera.getJpeg());
+	    InputStream cameraImageByteArray = null;
 	    try{
+	    	cameraImageByteArray = new ByteArrayInputStream(camera.getJpeg());
 	        cameraImage = ImageIO.read(cameraImageByteArray);
 	    }
 	    catch(IOException e){
@@ -84,7 +113,7 @@ public class ImagePerspectiveTransformation{
 	    int topRightCornerOldPositionX = 0;
 	    int topRightCornerOldPositionY = 0;
 	    
-	    if(cameraPreset.equals("S1")){
+	    if(cameraPreset.equals("W1")){
 	    	//Board 1 = S1
 	    	topLeftCornerOldPositionX = 12;
 	    	topLeftCornerOldPositionY = 40;
@@ -95,7 +124,7 @@ public class ImagePerspectiveTransformation{
 	    	topRightCornerOldPositionX = 28;
 	    	topRightCornerOldPositionY = 320;
 	    }
-	    else if(cameraPreset.equals("S3")){
+	    else if(cameraPreset.equals("W2")){
 	        //Board 2 = S3
 	    	topLeftCornerOldPositionX = 8;
 	    	topLeftCornerOldPositionY = 80;
@@ -106,7 +135,7 @@ public class ImagePerspectiveTransformation{
 	    	topRightCornerOldPositionX = 28;
 	    	topRightCornerOldPositionY = 387;
 	    }
-	    else if(cameraPreset.equals("S7")){
+	    else if(cameraPreset.equals("W3")){
 	        //Board 3 = S7
 	    	topLeftCornerOldPositionX = 32;
 	    	topLeftCornerOldPositionY = 113;
@@ -117,7 +146,7 @@ public class ImagePerspectiveTransformation{
 	    	topRightCornerOldPositionX = 54;
 	    	topRightCornerOldPositionY = 360;
 	    }
-	    else{
+	    else if(cameraPreset.equals("W4")){
 	        //Board 4 = S9
 	    	topLeftCornerOldPositionX = 30;
 	    	topLeftCornerOldPositionY = 136;
@@ -127,6 +156,9 @@ public class ImagePerspectiveTransformation{
 	    	bottomRightCornerOldPositionY = 342;
 	    	topRightCornerOldPositionX = 59;
 	    	topRightCornerOldPositionY = 415;
+	    }
+	    else{
+	    	System.out.println("In ImagePersepectiveTransformation: Preset unknown: "+cameraPreset);
 	    }
 	    associatedPairs.add(new AssociatedPair(new Point2D_F64(0,0), new Point2D_F64(topLeftCornerOldPositionX, topLeftCornerOldPositionY)));
 	    associatedPairs.add(new AssociatedPair(new Point2D_F64(output.width-1,0), new Point2D_F64(bottomLeftCornerOldPositionX, bottomLeftCornerOldPositionY)));

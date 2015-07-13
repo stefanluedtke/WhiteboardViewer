@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
+import de.mmis.applications.presenter.ImagePerspectiveTransformation;
 import de.mmis.core.base.abstracttree.InnerNode;
 import de.mmis.core.base.abstracttree.LeafNode;
 import de.mmis.core.base.abstracttree.LeafNode.Encoding;
@@ -70,6 +71,9 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 */
 	String displayPosition;
 	Timer timer;
+
+	private ImagePerspectiveTransformation ipt;
+	
 	static final int[][] viewQualityMatrix = 
 		{{-1,0,1,1,1,1,-1,-1,-1},
 		{-1,-1,-1,-1,1,1,1,1,0},
@@ -116,7 +120,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		badViewTable.add(3, bad3);
 
 		lecturerPosition="W0";
-		whiteboard="S0";
+		whiteboard="W0";
 		displayPosition="S0";
 		timer = new Timer();
 	}
@@ -152,7 +156,11 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-	    	});	    	
+	    	});
+	    	
+	    	//set whiteboard as current lecturer position
+	    	//(may change if hmm event arrives)
+	    	whiteboard=lecturerPosition;
 	    	timer.schedule(new OutputTask(), TIMEOUT);
 	    }
 	}
@@ -173,6 +181,9 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				timer.cancel();
 				timer = new Timer();
 				timer.schedule(new OutputTask(), 10000);
+			}else{
+				//TODO: wie wird whiteboard aktualisiert, wenn 
+				//schon angezeigt wird? IPT-Task beenden und neu starten?
 			}
 			lecturerPosition=stateName;			
 		}else if(stateName.startsWith("T")){
@@ -252,8 +263,8 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	/**
 	 * Set the component to show the rectified image
 	 */
-	public void setPresenter(){
-		//
+	public void setPresenter(ImagePerspectiveTransformation ipt){
+		this.ipt=ipt;
 	}
 	
 	/**
@@ -353,6 +364,9 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			//process & show images continually
+			ipt.startImageProcessing(camera, whiteboard);
 		}
 	}
 
