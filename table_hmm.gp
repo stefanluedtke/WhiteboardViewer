@@ -14,14 +14,14 @@ invoke '(setTransitionProbabilities 6  (0.00      0.00    0.0    0.0    0.0    0
 invoke '(setTransitionProbabilities 7  (0.00      0.00    0.0    0.0    0.0    0.0    0.01    0.98    0.01))' # T8
 invoke '(setTransitionProbabilities 8  (0.01      0.00    0.0    0.0    0.0    0.0    0.0     0.01     0.98))' # T9
 
-invoke '(setNormalDiagObservationModel 0 (2.30 2.18) (0.5 0.5))' # T1
-invoke '(setNormalDiagObservationModel 1 (2.30 3.78) (0.5 0.5))' # T2
-invoke '(setNormalDiagObservationModel 2 (3.70 3.78) (0.5 0.5))' # T3
-invoke '(setNormalDiagObservationModel 3 (5.10 3.78) (0.5 0.5))' # T4
-invoke '(setNormalDiagObservationModel 4 (6.50 2.98) (0.5 0.5))' # T5
-invoke '(setNormalDiagObservationModel 5 (6.50 1.58) (0.5 0.5))' # T6
-invoke '(setNormalDiagObservationModel 6 (5.10 1.58) (0.5 0.5))' # T7
-invoke '(setNormalDiagObservationModel 7 (3.70 1.58) (0.5 0.5))' # T8
-invoke '(setNormalDiagObservationModel 8 (2.30 1.58) (0.5 0.5))' # T9
+invoke '(setNormalDiagObservationModel 0 (2.67 3.90) (0.5 0.5))' # T1
+invoke '(setNormalDiagObservationModel 1 (3 5) (0.5 0.5))' # T2
+invoke '(setNormalDiagObservationModel 2 (4.40 5) (0.5 0.5))' # T3
+invoke '(setNormalDiagObservationModel 3 (5.80 5) (0.5 0.5))' # T4
+invoke '(setNormalDiagObservationModel 4 (6.95 4.67) (0.5 0.5))' # T5
+invoke '(setNormalDiagObservationModel 5 (6.95 3.27) (0.5 0.5))' # T6
+invoke '(setNormalDiagObservationModel 6 (5.80 2.80) (0.5 0.5))' # T7
+invoke '(setNormalDiagObservationModel 7 (4.40 2.80) (0.5 0.5))' # T8
+invoke '(setNormalDiagObservationModel 8 (3 2.80) (0.5 0.5))' # T9
 
 pubsub
