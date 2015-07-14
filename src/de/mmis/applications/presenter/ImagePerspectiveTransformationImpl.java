@@ -64,7 +64,7 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 		stopFlag=true;
 	}
 	@Override
-	public void startImageProcessing(AXISHTTPv2 camera,String cameraPreset){
+	public void startImageProcessing(String cameraPreset){
 		System.out.println("Start image processing");
 		
 		//-------------------build frame
@@ -201,6 +201,10 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 		imageLabel.setIcon(new ImageIcon(image));
 		presentationWindow.repaint();
 
+	}
+	
+	public void setCamera(AXISHTTPv2 camera){
+		this.camera=camera;
 	}
 	
 }
