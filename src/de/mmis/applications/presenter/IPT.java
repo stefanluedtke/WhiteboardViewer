@@ -9,7 +9,7 @@ public class IPT{
 	
 
     public static void main(String[] args){
-    	ImagePerspectiveTransformation ipt=new ImagePerspectiveTransformation();
+    	ImagePerspectiveTransformationImpl ipt=new ImagePerspectiveTransformationImpl();
 
 		AXISHTTPv2 camera = new AXISHTTPv2Impl(null);
 		String cameraPreset = new String();
