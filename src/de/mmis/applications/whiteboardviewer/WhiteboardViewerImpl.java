@@ -86,6 +86,9 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	static List<List<Integer>> badViewTable;
 	
 	public WhiteboardViewerImpl(int input){
+		
+		setLecturerID("010-000-004-092");
+		
 		sittingPositions = new HashMap<String,String>();
 		this.input = input;
 
@@ -136,7 +139,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	    	waitingForLecturerPosition = true;
 	    	
 	    	Tree goalLightOn = new InnerNode(new LeafNode("DIM_VALUE"), new LeafNode("1.0"));
-	    	Tree goalScreenDown = new InnerNode(new LeafNode("POSITION"), new LeafNode("false"));
+	    	Tree goalScreenDown = new InnerNode(new LeafNode("POSITION"), new LeafNode("true"));
 	    	
 	    	//turn lights on
 	    	lamps.forEach((name,gbi) -> {
@@ -186,8 +189,8 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				//schon angezeigt wird? IPT-Task beenden und neu starten?
 			}
 			lecturerPosition=stateName;			
-		}else if(stateName.startsWith("T")){
-			System.out.println("Listener sitting at table: " + stateName);
+		}else if(stateName.startsWith("T") && !ubiid.equals(lecturerID)){
+			System.out.println("Listener " + ubiid + " sitting at table: " + stateName);
 			sittingPositions.put(ubiid, stateName);
 		}
 	}
@@ -264,6 +267,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 * Set the component to show the rectified image
 	 */
 	public void setPresenter(ImagePerspectiveTransformation ipt){
+		System.out.println("Added presenter.");
 		this.ipt=ipt;
 	}
 	
@@ -359,14 +363,18 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			
 			String projector = "Projector" + String.valueOf(screen) + "_GBI";
 			try {
-				projectors.get(projector).addGoal(GoalType.ACHIEVE, goalProjector , 1, 10000);
+				GoalBasedInteractor p = projectors.get(projector);
+				if(p == null){
+					System.out.println("Steffen hatte recht.");
+				}
+				p.addGoal(GoalType.ACHIEVE, goalProjector , 1, 10000);
 			} catch (InconsistentGoalException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 			//process & show images continually
-			ipt.startImageProcessing(camera, whiteboard);
+			ipt.startImageProcessing(whiteboard);
 		}
 	}
 
