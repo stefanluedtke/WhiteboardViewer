@@ -45,7 +45,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 * Positions of each tag, T0 if not positioned
 	 * T1-T9 for tables 1-9
 	 */
-	public Map<String , String> sittingPositions;
+	public Map<String , String> sittingPositions = new HashMap<String,String>();
 	/**
 	 * position of lecturer tag, W0 if not positioned,
 	 * W1-W4 for whiteboards 1-4
@@ -56,7 +56,6 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	GoalBasedInteractor extron;
 	
 	String lecturerPosition;
-	long whiteBoardTime;
 	int input=0;
 	String lecturerID;
 	AXISHTTPv2 camera;
@@ -70,7 +69,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 * screen where output is currently shown (S1-S7) or S0 for no projection
 	 */
 	String displayPosition;
-	Timer timer;
+	Timer timer = new Timer();
 
 	private ImagePerspectiveTransformation ipt;
 	
@@ -85,49 +84,14 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		
 	static List<List<Integer>> badViewTable;
 	
-	public WhiteboardViewerImpl(int input){
-		
+	
+	public WhiteboardViewerImpl(int input){		
 		setLecturerID("010-000-004-092");
-		
-		sittingPositions = new HashMap<String,String>();
-		this.input = input;
-
-		
-		//build badViewTable
-		badViewTable=new ArrayList<List<Integer>>();
-		List<Integer> bad0 = new ArrayList<Integer>();
-		bad0.add(1);
-		bad0.add(7);
-		bad0.add(8);
-		bad0.add(9);
-		badViewTable.add(0, bad0);
-		List<Integer> bad1 = new ArrayList<Integer>();
-		bad1.add(1);
-		bad1.add(4);
-		bad1.add(3);
-		bad1.add(2);
-		badViewTable.add(1, bad1);
-		List<Integer> bad2 = new ArrayList<Integer>();
-		bad2.add(5);
-		bad2.add(6);
-		bad2.add(4);
-		bad2.add(3);
-		bad2.add(2);
-		badViewTable.add(2, bad2);
-		List<Integer> bad3 = new ArrayList<Integer>();
-		bad3.add(6);
-		bad3.add(5);
-		bad3.add(9);
-		bad3.add(8);
-		bad3.add(7);
-		badViewTable.add(3, bad3);
-
+		buildBadViewTable();
+		input = input;
 		lecturerPosition="W0";
-		whiteboard="W0";
-		displayPosition="S0";
-		timer = new Timer();
 	}
-
+	
 
 	@Override
 	public void penTaken(){
@@ -213,7 +177,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		}		
 		List<Integer> badViewPositions = badViewTable.get(whiteboardIndex);
 		
-		//	The number of listernes with a bad view to the witeboard for every table 
+		//	The number of listernes with a bad view to the whiteboard for every table 
 		// (eg. badListener[2] stores the number of listeners on table 3 
 		// (only if they have a bad view))
 		Integer[] badListener = {0,0,0,0,0,0,0,0,0};	
@@ -228,8 +192,6 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		for(int i=0; i < 9 ; ++i){
 			System.out.println("Table " + (i+1) + ":" + badListener[i]);
 		}
-		
-		//sm479: CHECK
 		
 		Integer optimalScreen=-1;
 		Integer bestScore= Integer.MIN_VALUE;
@@ -249,6 +211,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
  		System.out.println("Best possible screen: " + optimalScreen );
  		System.out.println("Done.");
  		//translate screen number to match the roomids
+ 		++optimalScreen;
  		if(optimalScreen == 7){
  			return (optimalScreen+2);
  		}
@@ -306,13 +269,10 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		}
 	}
 	
-	
-
-	
 	private Integer getTableNumber(String tableid){
 		return Integer.parseInt(tableid.substring(1));
 	}
-	
+		
 	/**
 	 * Translates a HMM-State to a camera known preset
 	 * @param HMM-State
@@ -329,6 +289,36 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		}
 	}
 	
+	private void buildBadViewTable(){
+		badViewTable=new ArrayList<List<Integer>>();
+		List<Integer> bad0 = new ArrayList<Integer>();
+		bad0.add(1);
+		bad0.add(7);
+		bad0.add(8);
+		bad0.add(9);
+		badViewTable.add(0, bad0);
+		List<Integer> bad1 = new ArrayList<Integer>();
+		bad1.add(1);
+		bad1.add(4);
+		bad1.add(3);
+		bad1.add(2);
+		badViewTable.add(1, bad1);
+		List<Integer> bad2 = new ArrayList<Integer>();
+		bad2.add(5);
+		bad2.add(6);
+		bad2.add(4);
+		bad2.add(3);
+		bad2.add(2);
+		badViewTable.add(2, bad2);
+		List<Integer> bad3 = new ArrayList<Integer>();
+		bad3.add(6);
+		bad3.add(5);
+		bad3.add(9);
+		bad3.add(8);
+		bad3.add(7);
+		badViewTable.add(3, bad3);
+	}
+	
 	class OutputTask extends TimerTask {
 		@Override
 		public void run() {
@@ -339,7 +329,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			//Determine optimal screen
 			try {
 				screen = getDisplayPosition(whiteboard);
-				if(screen == -1){
+				if(screen < 1 || screen > 9){
 					System.out.println("Couldn't determine optimal Screen.");
 					waitingForLecturerPosition = true;
 					return;
@@ -366,6 +356,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			try {
 				if(extron == null){
 					System.out.println("Extron_GBI not initialized");
+					waitingForLecturerPosition = true;
 					return;
 				}
 			extron.addGoal(GoalType.ACHIEVE, goalE, 1, 10000);				
@@ -382,11 +373,27 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			try {
 				GoalBasedInteractor p = projectors.get(projector);
 				if(p == null){
+					waitingForLecturerPosition = true;
 					System.out.println("Projector Number: "+ screen +" not found." );
+					return;
 				}
 				p.addGoal(GoalType.ACHIEVE, goalProjector , 1, 10000);
 			} catch (InconsistentGoalException e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println("Rolling Screen "+screen+" down.");
+			//screen down
+			Tree goalScreenDown = new InnerNode(new LeafNode("POSITION"), new LeafNode("true"));
+			try {
+				GoalBasedInteractor s = screens.get("S" + screen + "_GBI"); 
+				if(s == null){
+					System.out.println("S"+screen+"_GBI not found");
+					waitingForLecturerPosition = true;
+				}
+				s.addGoal(GoalType.ACHIEVE, goalScreenDown, 1, 10000);
+			} catch (InconsistentGoalException e) {
 				e.printStackTrace();
 			}
 			
