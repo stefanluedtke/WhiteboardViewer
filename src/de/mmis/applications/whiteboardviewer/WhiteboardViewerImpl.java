@@ -45,7 +45,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 * Positions of each tag, T0 if not positioned
 	 * T1-T9 for tables 1-9
 	 */
-	Map<String , String> sittingPositions;
+	public Map<String , String> sittingPositions;
 	/**
 	 * position of lecturer tag, W0 if not positioned,
 	 * W1-W4 for whiteboards 1-4
@@ -212,8 +212,11 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		default : return -1;
 		}		
 		List<Integer> badViewPositions = badViewTable.get(whiteboardIndex);
-		Integer[] badListener = {0,0,0,0,0,0,0,0,0};
 		
+		//	The number of listernes with a bad view to the witeboard for every table 
+		// (eg. badListener[2] stores the number of listeners on table 3 
+		// (only if they have a bad view))
+		Integer[] badListener = {0,0,0,0,0,0,0,0,0};	
 		sittingPositions.forEach((uid, table) -> {
 			Integer tableId = getTableNumber(table);
 			if(badViewPositions.contains(tableId)){
@@ -221,9 +224,16 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			}
 		});
 		
+		System.out.println("Bad Viewer: ");
+		for(int i=0; i < 9 ; ++i){
+			System.out.println("Table " + (i+1) + ":" + badListener[i]);
+		}
+		
+		//sm479: CHECK
+		
 		Integer optimalScreen=-1;
 		Integer bestScore= Integer.MIN_VALUE;
-		Integer[] screenQualities = {0,0,0,0,0,0,0};
+		int[] screenQualities = {0,0,0,0,0,0,0};
  		for(int i = 0 ; i < 7 ; i++ ){
 			for(int j = 0; j < 9 ; j++ ){
 				screenQualities[i] += viewQualityMatrix[i][j] * badListener[j];
@@ -232,8 +242,11 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				bestScore = screenQualities[i];
 				optimalScreen = i;				
 			}
-		}		
+		}
+ 		
+ 		
  		System.out.println("BestScore: " + bestScore);
+ 		System.out.println("Best possible screen: " + optimalScreen );
  		System.out.println("Done.");
  		//translate screen number to match the roomids
  		if(optimalScreen == 7){
@@ -267,7 +280,6 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	 * Set the component to show the rectified image
 	 */
 	public void setPresenter(ImagePerspectiveTransformation ipt){
-		System.out.println("Added presenter.");
 		this.ipt=ipt;
 	}
 	
@@ -346,13 +358,18 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 				e.printStackTrace();
 			}
 			
+			
+			
 			//control extron
 			System.out.println("Extron input:" + whiteboard);
 			Tree goalE = new InnerNode(new LeafNode(String.valueOf(input)),new LeafNode(String.valueOf(screen)), new LeafNode("BOTH"));
 			try {
-				extron.addGoal(GoalType.ACHIEVE, goalE, 1, 10000);
+				if(extron == null){
+					System.out.println("Extron_GBI not initialized");
+					return;
+				}
+			extron.addGoal(GoalType.ACHIEVE, goalE, 1, 10000);				
 			} catch (InconsistentGoalException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -365,7 +382,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			try {
 				GoalBasedInteractor p = projectors.get(projector);
 				if(p == null){
-					System.out.println("Steffen hatte recht.");
+					System.out.println("Projector Number: "+ screen +" not found." );
 				}
 				p.addGoal(GoalType.ACHIEVE, goalProjector , 1, 10000);
 			} catch (InconsistentGoalException e) {
