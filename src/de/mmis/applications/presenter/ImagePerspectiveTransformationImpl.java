@@ -60,6 +60,7 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 		}
 	}
 	
+	@Override
 	public void stopThread(){
 		stopFlag=true;
 	}
@@ -91,6 +92,8 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 		
 		this.camera=camera;
 		this.cameraPreset=cameraPreset;
+		
+		stopFlag=false;
 		start();
 	}
 	

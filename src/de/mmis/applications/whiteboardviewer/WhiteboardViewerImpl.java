@@ -132,6 +132,57 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	    }
 	}
 	
+	/**
+	 * Resets the component -> wait for new pentaken-event
+	 */
+	public void reset(){
+		System.out.println("Resetting WhiteboardViewer");
+		
+		//reset state
+		isActive=false;
+		waitingForLecturerPosition=false;
+		
+		//stop output
+		ipt.stopThread();
+		
+		//lights out
+		Tree goalLightOff = new InnerNode(new LeafNode("DIM_VALUE"), new LeafNode("0"));
+		lamps.forEach((name,gbi) -> 
+		{
+				try {
+					gbi.addGoal(GoalType.ACHIEVE, goalLightOff, 1, 10000);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		});
+		
+		//screen up
+		Tree goalScreenUp = new InnerNode(new LeafNode("POSITION"), new LeafNode("false"));
+		screens.forEach((name,gbi) ->
+		{
+			try{
+				gbi.addGoal(GoalType.ACHIEVE, goalScreenUp, 1, 10000);
+			}catch (Exception e){
+				
+			}
+		});
+		
+		//turn projector off
+		Tree goalProjectorOff = new LeafNode("POWER_OFF");
+		projectors.forEach((name,gbi) ->
+		{
+			try{
+				gbi.addGoal(GoalType.ACHIEVE, goalProjectorOff, 1, 10000);
+			}catch (Exception e){
+				
+			}
+		});
+		
+		
+		
+	}
+	
 	@Override
 	public String toString(){
 		return "Ich bin der Whiteboardviewer";
