@@ -52,11 +52,11 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 		while(!stopFlag){
 			BufferedImage image = imageCalculation(camera, cameraPreset);
 			showImage(image);
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(10000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
 	
@@ -96,6 +96,7 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 	
 	public BufferedImage imageCalculation(AXISHTTPv2 camera, String cameraPreset){
 
+		
 		//Byte [] in BufferedImage
 		BufferedImage cameraImage = null;
 	    InputStream cameraImageByteArray = null;
@@ -106,75 +107,78 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 	    catch(IOException e){
 	        e.printStackTrace();
 	    }
+	    
+	    
 
 		MultiSpectral<ImageFloat32> input = ConvertBufferedImage.convertFromMulti(cameraImage, null, true, ImageFloat32.class);
 
 	    //Erstelle die Augabe
 		Dimension screenSize=presentationWindow.getToolkit().getScreenSize();
+		System.out.println(screenSize);
 		MultiSpectral<ImageFloat32> output = input._createNew((int) screenSize.getWidth(), (int) screenSize.getHeight());
 
 		//Position der Bilder
 	    ArrayList<AssociatedPair> associatedPairs = new ArrayList<AssociatedPair>();
 	    int topLeftCornerOldPositionX = 0;
 	    int topLeftCornerOldPositionY = 0;
-	    int bottomLeftCornerOldPositionX = 0;
-	    int bottomLeftCornerOldPositionY = 0;
-	    int bottomRightCornerOldPositionX = 0;
-	    int bottomRightCornerOldPositionY = 0;
 	    int topRightCornerOldPositionX = 0;
 	    int topRightCornerOldPositionY = 0;
+	    int bottomRightCornerOldPositionX = 0;
+	    int bottomRightCornerOldPositionY = 0;
+	    int bottonLeftCornerOldPositionX = 0;
+	    int bottomLeftCornerOldPositionY = 0;
 	    
 	    if(cameraPreset.equals("W1")){
 	    	//Board 1 = S1
-	    	topLeftCornerOldPositionX = 12;
-	    	topLeftCornerOldPositionY = 40;
-	    	bottomLeftCornerOldPositionX = 578;
-	    	bottomLeftCornerOldPositionY = 80;
-	    	bottomRightCornerOldPositionX = 550;
-	    	bottomRightCornerOldPositionY = 387;
-	    	topRightCornerOldPositionX = 28;
-	    	topRightCornerOldPositionY = 320;
+	    	topLeftCornerOldPositionX = 18;
+	    	topLeftCornerOldPositionY = 48;
+	    	topRightCornerOldPositionX = 697;
+	    	topRightCornerOldPositionY = 97;
+	    	bottomRightCornerOldPositionX = 661;
+	    	bottomRightCornerOldPositionY = 464;
+	    	bottonLeftCornerOldPositionX = 41;
+	    	bottomLeftCornerOldPositionY = 384;
 	    }
 	    else if(cameraPreset.equals("W2")){
 	        //Board 2 = S3
-	    	topLeftCornerOldPositionX = 8;
-	    	topLeftCornerOldPositionY = 80;
-	    	bottomLeftCornerOldPositionX = 556;
-	    	bottomLeftCornerOldPositionY = 53;
-	    	bottomRightCornerOldPositionX = 543;
-	    	bottomRightCornerOldPositionY = 327;
-	    	topRightCornerOldPositionX = 28;
-	    	topRightCornerOldPositionY = 387;
+	    	topLeftCornerOldPositionX = 14;
+	    	topLeftCornerOldPositionY = 96;
+	    	topRightCornerOldPositionX = 683;
+	    	topRightCornerOldPositionY = 66;
+	    	bottomRightCornerOldPositionX = 655;
+	    	bottomRightCornerOldPositionY = 393;
+	    	bottonLeftCornerOldPositionX = 39;
+	    	bottomLeftCornerOldPositionY = 464;
 	    }
 	    else if(cameraPreset.equals("W3")){
 	        //Board 3 = S7
-	    	topLeftCornerOldPositionX = 32;
-	    	topLeftCornerOldPositionY = 113;
-	    	bottomLeftCornerOldPositionX = 545;
-	    	bottomLeftCornerOldPositionY = 153;
-	    	bottomRightCornerOldPositionX = 521;
-	    	bottomRightCornerOldPositionY = 434;
-	    	topRightCornerOldPositionX = 54;
-	    	topRightCornerOldPositionY = 360;
+	    	topLeftCornerOldPositionX = 39;
+	    	topLeftCornerOldPositionY = 135;
+	    	topRightCornerOldPositionX = 656;
+	    	topRightCornerOldPositionY = 148;
+	    	bottomRightCornerOldPositionX = 625;
+	    	bottomRightCornerOldPositionY = 519;
+	    	bottonLeftCornerOldPositionX = 65;
+	    	bottomLeftCornerOldPositionY = 431;
 	    }
 	    else if(cameraPreset.equals("W4")){
 	        //Board 4 = S9
-	    	topLeftCornerOldPositionX = 30;
-	    	topLeftCornerOldPositionY = 136;
-	    	bottomLeftCornerOldPositionX = 554;
-	    	bottomLeftCornerOldPositionY = 89;
-	    	bottomRightCornerOldPositionX = 534;
-	    	bottomRightCornerOldPositionY = 342;
-	    	topRightCornerOldPositionX = 59;
-	    	topRightCornerOldPositionY = 415;
+	    	topLeftCornerOldPositionX = 36;
+	    	topLeftCornerOldPositionY = 163;
+	    	topRightCornerOldPositionX = 664;
+	    	topRightCornerOldPositionY = 110;
+	    	bottomRightCornerOldPositionX = 637;
+	    	bottomRightCornerOldPositionY = 409;
+	    	bottonLeftCornerOldPositionX = 71;
+	    	bottomLeftCornerOldPositionY = 499;
 	    }
 	    else{
 	    	System.out.println("In ImagePersepectiveTransformation: Preset unknown: "+cameraPreset);
 	    }
 	    associatedPairs.add(new AssociatedPair(new Point2D_F64(0,0), new Point2D_F64(topLeftCornerOldPositionX, topLeftCornerOldPositionY)));
-	    associatedPairs.add(new AssociatedPair(new Point2D_F64(output.width-1,0), new Point2D_F64(bottomLeftCornerOldPositionX, bottomLeftCornerOldPositionY)));
+	    associatedPairs.add(new AssociatedPair(new Point2D_F64(output.width-1,0), new Point2D_F64(topRightCornerOldPositionX, topRightCornerOldPositionY)));
 	    associatedPairs.add(new AssociatedPair(new Point2D_F64(output.width-1,output.height-1), new Point2D_F64(bottomRightCornerOldPositionX, bottomRightCornerOldPositionY)));
-	    associatedPairs.add(new AssociatedPair(new Point2D_F64(0,output.height-1), new Point2D_F64(topRightCornerOldPositionX, topRightCornerOldPositionY)));
+	    associatedPairs.add(new AssociatedPair(new Point2D_F64(0,output.height-1), new Point2D_F64(bottonLeftCornerOldPositionX, bottomLeftCornerOldPositionY)));
 	    
 	    //Homography Algorithmus, erfordert ein Minimum von 4 Punkten
 	    Estimate1ofEpipolar computeHomography = FactoryMultiView.computeHomography(true);
@@ -204,6 +208,7 @@ public class ImagePerspectiveTransformationImpl extends Thread implements ImageP
 	}
 	
 	public void setCamera(AXISHTTPv2 camera){
+		System.out.println("Camera set");
 		this.camera=camera;
 	}
 	
