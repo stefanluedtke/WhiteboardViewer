@@ -17,8 +17,8 @@ public class WhiteboardViewerTest {
 //		wv.sittingPositions.put("010-000-004-008", "T4");
 //		wv.sittingPositions.put("010-000-004-009", "T5");
 //		wv.sittingPositions.put("010-000-004-010", "T5");
-		wv.sittingPositions.put("010-000-004-020", "T6");
-		wv.sittingPositions.put("010-000-004-037", "T6");
+//		wv.sittingPositions.put("010-000-004-020", "T6");
+//		wv.sittingPositions.put("010-000-004-037", "T6");
 		wv.sittingPositions.put("010-000-004-047", "T7");
 		wv.sittingPositions.put("010-000-004-057", "T7");
 		wv.sittingPositions.put("010-000-004-067", "T8");

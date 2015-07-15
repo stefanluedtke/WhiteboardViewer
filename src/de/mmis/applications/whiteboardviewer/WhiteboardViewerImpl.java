@@ -88,7 +88,7 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 	public WhiteboardViewerImpl(int input){		
 		setLecturerID("010-000-004-092");
 		buildBadViewTable();
-		input = input;
+		this.input = input;
 		lecturerPosition="W0";
 	}
 	
@@ -319,6 +319,47 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 		badViewTable.add(3, bad3);
 	}
 	
+	private void turnLightOut(int screen){
+		Tree goalLightOff = new InnerNode(new LeafNode("DIM_VALUE"), new LeafNode("0"));
+		if(screen == 4 || screen == 5 || screen == 6){
+			lamps.forEach((name,gbi) -> 
+			{
+				if(name.equals("Lamp03_GBI") || name.equals("Lamp06_GBI") || name.equals("Lamp09_GBI") || name.equals("Lamp12_GBI")){
+					try {
+						gbi.addGoal(GoalType.ACHIEVE, goalLightOff, 1, 10000);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+		if(screen >= 7){
+			lamps.forEach((name,gbi) -> 
+			{
+				if(name.equals("Lamp10_GBI") || name.equals("Lamp11_GBI") || name.equals("Lamp12_GBI")){
+					try {
+						gbi.addGoal(GoalType.ACHIEVE, goalLightOff, 1, 10000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+		if(screen <= 3  ){
+			lamps.forEach((name,gbi) -> 
+			{
+				if(name.equals("Lamp01_GBI") || name.equals("Lamp02_GBI") || name.equals("Lamp03_GBI")){
+					try {
+						gbi.addGoal(GoalType.ACHIEVE, goalLightOff, 1, 10000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+	}
+	
 	class OutputTask extends TimerTask {
 		@Override
 		public void run() {
@@ -396,6 +437,10 @@ public class WhiteboardViewerImpl extends AbstractObservable<Event> implements W
 			} catch (InconsistentGoalException e) {
 				e.printStackTrace();
 			}
+			
+			//lampen aus
+			turnLightOut(screen);
+			
 			
 			//process & show images continually
 			ipt.startImageProcessing(whiteboard);
